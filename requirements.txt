@@ -2,3 +2,5 @@ cohere
 qdrant_client
 gradio
 black
+python-dotenv
+langchain
