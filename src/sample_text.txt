@@ -1,0 +1,19 @@
+Photosynthesis is a process used by plants and other organisms to convert light energy into chemical energy that, 
+through cellular respiration, can later be released to fuel the organism's activities. Some of this chemical energy 
+is stored in carbohydrate molecules, such as sugars and starches, which are synthesized from carbon dioxide and water – hence 
+the name photosynthesis, from the Greek phōs (φῶς), "light", and synthesis (σύνθεσις), "putting together".[1][2][3] Most plants, 
+algae, and cyanobacteria perform photosynthesis; such organisms are called photoautotrophs. Photosynthesis is largely responsible for producing and maintaining the oxygen content of the Earth's atmosphere, and supplies most of the energy necessary for life on Earth.[4]
+Although photosynthesis is performed differently by different species, the process always begins when energy from light is 
+absorbed by proteins called reaction centers that contain green chlorophyll (and other colored) pigments/chromophores. 
+In plants, these proteins are held inside organelles called chloroplasts, which are most abundant in leaf cells, 
+while in bacteria they are embedded in the plasma membrane. In these light-dependent reactions, some energy is used 
+to strip electrons from suitable substances, such as water, producing oxygen gas. The hydrogen freed by the splitting
+of water is used in the creation of two further compounds that serve as short-term stores of energy, enabling its 
+transfer to drive other reactions: these compounds are reduced nicotinamide adenine dinucleotide phosphate (NADPH) and
+adenosine triphosphate (ATP), the "energy currency" of cells.
+
+In plants, algae and cyanobacteria, sugars are synthesized by a subsequent sequence of light-independent
+ reactions called the Calvin cycle. In the Calvin cycle, atmospheric carbon dioxide is incorporated 
+ into already existing organic carbon compounds, such as ribulose bisphosphate (RuBP).[5] Using the ATP and NADPH 
+ produced by the light-dependent reactions, the resulting compounds are then reduced and removed to form further carbohydrates,
+  such as glucose. In other bacteria, different mechanisms such as the reverse Krebs cycle are used to achieve the same end.
