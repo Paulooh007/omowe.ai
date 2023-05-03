@@ -1,0 +1,4 @@
+cohere
+qdrant_client
+gradio
+black
