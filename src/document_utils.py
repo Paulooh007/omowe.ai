@@ -10,7 +10,7 @@ from langchain.prompts import PromptTemplate
 from langchain.vectorstores import Qdrant
 from langchain.chains.question_answering import load_qa_chain
 
-from constants import SUMMARIZATION_MODEL, EXAMPLES_FILE_PATH
+from constants import SUMMARIZATION_MODEL
 
 
 # load environment variables
