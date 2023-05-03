@@ -15,3 +15,6 @@ CREATE_QDRANT_COLLECTION_NAME = "wiki-embed"
 
 # name of cohere's model which will be used for generating the translation of an input document
 TEXT_GENERATION_MODEL = "command-xlarge-nightly"
+
+
+EXAMPLES_FILE_PATH = "app/examples.csv"

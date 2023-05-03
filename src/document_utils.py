@@ -10,7 +10,7 @@ from langchain.prompts import PromptTemplate
 from langchain.vectorstores import Qdrant
 from langchain.chains.question_answering import load_qa_chain
 
-from constants import SUMMARIZATION_MODEL
+from src.constants import SUMMARIZATION_MODEL, EXAMPLES_FILE_PATH
 
 
 # load environment variables
@@ -106,6 +106,12 @@ def question_answer(input_document: str, history: List) -> str:
     answer = answer.replace("\n", "").replace("Answer:", "")
     return answer
 
+
+def load_gpl_license():
+    pass
+
+def load_pokemon_license():
+    pass
 
 if __name__ == "__main__":
     with open('sample_text.txt', 'r') as file:

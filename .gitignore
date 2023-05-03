@@ -143,3 +143,4 @@ Thumbs.db
 
 # secrets
 .env
+.vscode/
