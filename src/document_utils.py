@@ -1,4 +1,6 @@
 import os
+import sys
+
 import pandas as pd
 from typing import List
 from dotenv import load_dotenv
@@ -9,6 +11,8 @@ from langchain.llms import Cohere
 from langchain.prompts import PromptTemplate
 from langchain.vectorstores import Qdrant
 from langchain.chains.question_answering import load_qa_chain
+
+sys.path.append(os.path.abspath('..'))
 
 from src.constants import SUMMARIZATION_MODEL, EXAMPLES_FILE_PATH
 
@@ -75,8 +79,11 @@ def question_answer(input_document: str, history: List) -> str:
     context = input_document
     # The last element of the `history` list contains the most recent question asked by the user whose answer needs to be generated.
     question = history[-1][0]
+    word_list = context.split()
+    # texts = [context[k : k + 256] for k in range(0, len(context.split()), 256)]
+    texts =  [" ".join(word_list[k : k + 256]) for k in range(0, len(word_list), 256)]
 
-    texts = [context[k : k + 256] for k in range(0, len(context.split()), 256)]
+    # print(texts)
 
     embeddings = CohereEmbeddings(
         model="multilingual-22-12", cohere_api_key=COHERE_API_KEY
@@ -106,17 +113,37 @@ def question_answer(input_document: str, history: List) -> str:
     answer = answer.replace("\n", "").replace("Answer:", "")
     return answer
 
+def generate_questions(input_document: str) -> str:
+    generated_response = cohere.Client(COHERE_API_KEY).generate(
+        prompt = f"Give me 5 different quiz questions to test the understanding of the following text. Here's the provided text: {input_document}. Whats Questions 1 to 5 of the quiz ?:",
+        max_tokens = 300,
+        temperature = 0.8
+    )
+    # prompt = f"Generate 5 different quiz questions to test the understanding of the following text. Here's the provided text: {input_document}. Whats Questions 1 to 5 of the quiz ?:"
+    # print(prompt)
+    return generated_response.generations[0].text
 
-def load_gpl_license():
-    pass
 
-def load_pokemon_license():
-    pass
+def load_science():
+    examples_df = pd.read_csv(EXAMPLES_FILE_PATH)
+    science_doc = examples_df["doc"].iloc[0]
+    sample_question = examples_df["question"].iloc[0]
+    return science_doc, sample_question
+
+
+def load_history():
+    examples_df = pd.read_csv(EXAMPLES_FILE_PATH)
+    history_doc = examples_df["doc"].iloc[1]
+    sample_question = examples_df["question"].iloc[1]
+    return history_doc, sample_question
+
 
 if __name__ == "__main__":
     with open('sample_text.txt', 'r') as file:
         text = file.read()
     # summary = summarize(text, summary_length="short", summary_format="bullets")
     # print(summary)
-    answer = question_answer(text, [["what is photosynthesis", None]])
-    print(answer)
+    # answer = question_answer(text, [["what is photosynthesis", None]])
+    # print(answer)
+    question = question_answer(text, ["Whats photosynthesis"])
+    print(question)
