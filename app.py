@@ -4,11 +4,11 @@ import gradio as gr
 from src.document_utils import (
     summarize,
     question_answer,
-    load_gpl_license,
-    load_pokemon_license,
-    paraphrase,
+    generate_questions,
+    load_history,
+    load_science,
 )
-from src.wiki_search import cross_lingual_document_search, translate_search_result
+from src.wiki_search import cross_lingual_document_search, document_source
 from src.theme import CustomTheme
 
 max_search_results = 3
@@ -22,10 +22,13 @@ def get_user_input(input_question, history):
     return "", history + [[input_question, None]]
 
 
-def legal_doc_qa_bot(input_document, history):
+def study_doc_qa_bot(input_document, history):
     bot_message = question_answer(input_document, history)
     history[-1][1] = bot_message
     return history
+
+def my_function(file_object):
+    pass
 
 
 custom_theme = CustomTheme()
@@ -33,145 +36,24 @@ custom_theme = CustomTheme()
 
 with gr.Blocks(theme=custom_theme) as demo:
     gr.HTML(
-        """<html><center><img src='file/logo/flc_design4.png', alt='Legal-ease logo', width=250, height=250 /></center><br></html>"""
+        """<html><center><img src='file/logo/omowe_logo.png', alt='omowe.ai logo', width=820, height=312 /></center><br></html>"""
     )
 
     qa_bot_state = gr.State(value=[])
 
     with gr.Tabs():
-        with gr.TabItem("Q&A"):
-            gr.HTML(
-                """<p style="text-align:center;"><b>Legal documents can be difficult to comprehend and understand. Add a legal document below and ask any questions related to it.</p>"""
-            )
-
-            with gr.Row():
-                with gr.Column():
-                    input_document = gr.Text(label="Copy your document here", lines=10)
-
-                with gr.Column():
-                    chatbot = gr.Chatbot(label="Chat History")
-                    input_question = gr.Text(
-                        label="Ask a question",
-                        placeholder="Type a question here and hit enter.",
-                    )
-                    clear = gr.Button("Clear", variant="primary")
-
-            with gr.Row():
-                with gr.Accordion("Show example inputs I can load:", open=False):
-                    example_1 = gr.Button(
-                        "Load GPL License Document", variant="primary"
-                    )
-                    example_2 = gr.Button(
-                        "Load Pokemon Go Terms of Service", variant="primary"
-                    )
-
-        with gr.TabItem("Summarize"):
-            gr.HTML(
-                """<p style="text-align:center;"><b>Reading through long text can be very time-consuming. Add your document below and generate a quick summary for it.</p>"""
-            )
-
-            with gr.Row():
-                with gr.Column():
-                    summary_input = gr.Text(label="Document", lines=10)
-                    generate_summary = gr.Button("Generate Summary", variant="primary")
-
-                with gr.Column():
-                    summary_output = gr.Text(label="Summary", lines=10)
-                    invisible_comp = gr.Text(label="Dummy Component", visible=False)
-
-            with gr.Row():
-                with gr.Accordion("Advanced Settings:", open=False):
-                    summary_length = gr.Radio(
-                        ["short", "medium", "long"],
-                        label="Summary Length",
-                        value="long",
-                    )
-                    summary_format = gr.Radio(
-                        ["paragraph", "bullets"],
-                        label="Summary Format",
-                        value="bullets",
-                    )
-                    extractiveness = gr.Radio(
-                        ["low", "medium", "high"],
-                        label="Extractiveness",
-                        info="Controls how close to the original text the summary is.",
-                        visible=False,
-                        value="high",
-                    )
-                    temperature = gr.Slider(
-                        minimum=0,
-                        maximum=5.0,
-                        value=0.64,
-                        step=0.1,
-                        interactive=True,
-                        visible=False,
-                        label="Temperature",
-                        info="Controls the randomness of the output. Lower values tend to generate more “predictable” output, while higher values tend to generate more “creative” output.",
-                    )
-
-            with gr.Row():
-                with gr.Accordion("Show example inputs I can load:", open=False):
-                    example_3 = gr.Button(
-                        "Load GPL License Document", variant="primary"
-                    )
-                    example_4 = gr.Button(
-                        "Load Pokemon Go Terms of Service", variant="primary"
-                    )
-        with gr.TabItem("Paraphrase"):
-            gr.HTML(
-                """<p style="text-align:center;"><b>Paraphraser. Add your document below and generate a rephrase for it.</p>"""
-            )
-
-            with gr.Row():
-                with gr.Column():
-                    paraphrase_input = gr.Text(label="Document", lines=10)
-                    generate_paraphrase = gr.Button("Paraphrase", variant="primary")
-
-                with gr.Column():
-                    paraphrase_output = gr.HTML(label="Paraphrase", lines=10)
-                    invisible_comp = gr.Text(label="Dummy Component", visible=False)
-
-            with gr.Row():
-                with gr.Accordion("Advanced Settings:", open=False):
-                    paraphrase_length = gr.Radio(
-                        ["short", "medium", "long"],
-                        label="Paraphrase Length",
-                        value="long",
-                    )
-                    paraphrase_format = gr.Radio(
-                        ["paragraph", "bullets"],
-                        label="Paraphrase Format",
-                        value="bullets",
-                    )
-                    extractiveness = gr.Radio(
-                        ["low", "medium", "high"],
-                        label="Extractiveness",
-                        info="Controls how close to the original text the paraphrase is.",
-                        visible=False,
-                        value="high",
-                    )
-                    temperature = gr.Slider(
-                        minimum=0,
-                        maximum=5.0,
-                        value=0.64,
-                        step=0.1,
-                        interactive=True,
-                        visible=False,
-                        label="Temperature",
-                        info="Controls the randomness of the output. Lower values tend to generate more “predictable” output, while higher values tend to generate more “creative” output.",
-                    )
-
+        
         with gr.TabItem("Document Search"):
             gr.HTML(
-                """<p style="text-align:center;"><b>Search across a set of study materials in your own native language or even a mix of languages.</p>"""
+                """<p style="text-align:center;font-size:24px;"><b>Search across a set of study materials in your own native language or even a mix of languages.</p>"""
             )
             gr.HTML(
-                """<p style="text-align:center; font-style:italic;">Get started with a pre-indexed set of study materials spaning various subjects (History, Literature, Philosophy, Government etc) in 4 different languages.</p>"""
+                """<p style="text-align:center; font-style:italic; font-size:16px;">Get started with a pre-indexed set of study materials spaning various subjects (History, Literature, Philosophy, Government etc) in 4 different languages.</p>"""
             )
 
             with gr.Row():
                 text_match = gr.CheckboxGroup(
-                    ["Full Text Search"], label="find exact text in documents"
+                    ["Full Text Search"], label="find exact text in documents", visible=False
                 )
 
             with gr.Row():
@@ -183,13 +65,14 @@ with gr.Blocks(theme=custom_theme) as demo:
                         "Hausa",
                     ],
                     label="Filter results based on language",
+                    value = "Yoruba"
                 )
 
             with gr.Row():
                 with gr.Column():
                     user_query = gr.Text(
                         label="Enter query here",
-                        placeholder="Search through all your documents",
+                        placeholder="Search through study materials (e.g The history of Lagos)",
                     )
 
                     num_search_results = gr.Slider(
@@ -210,14 +93,15 @@ with gr.Blocks(theme=custom_theme) as demo:
                                 )
 
                         with gr.Column():
-                            with gr.Accordion("Translate Search Result", open=False):
-                                translate_1 = gr.Button(
-                                    label="Translate",
-                                    value="Translate",
-                                    variant="primary",
-                                )
+                            with gr.Accordion("Click to View Source", open=False):
+                                # gr.Button(
+                                #     label="Go to Source",
+                                #     value="Get Sources",
+                                #     variant="primary",
+                                # ).click(fn=None, _js="window.open('https://google.com', '_blank')")
+
                                 translate_res_1 = gr.Textbox(
-                                    label=f"Translation Result 1"
+                                    label=f"Source Url",
                                 )
 
                     with gr.Row():
@@ -225,14 +109,9 @@ with gr.Blocks(theme=custom_theme) as demo:
                             query_match_out_2 = gr.Textbox(label=f"Search Result 2")
 
                         with gr.Column():
-                            with gr.Accordion("Translate Search Result", open=False):
-                                translate_2 = gr.Button(
-                                    label="Translate",
-                                    value="Translate",
-                                    variant="primary",
-                                )
+                            with gr.Accordion("Click to View Source", open=False):
                                 translate_res_2 = gr.Textbox(
-                                    label=f"Translation Result 2"
+                                    label=f"Source Url"
                                 )
 
                     with gr.Row():
@@ -240,15 +119,106 @@ with gr.Blocks(theme=custom_theme) as demo:
                             query_match_out_3 = gr.Textbox(label=f"Search Result 3")
 
                         with gr.Column():
-                            with gr.Accordion("Translate Search Result", open=False):
-                                translate_3 = gr.Button(
-                                    label="Translate",
-                                    value="Translate",
-                                    variant="primary",
-                                )
+                            with gr.Accordion("Click to View Source", open=False):
                                 translate_res_3 = gr.Textbox(
-                                    label=f"Translation Result 3"
+                                    label=f"Source Url"
                                 )
+
+        with gr.TabItem("Q&A"):
+            gr.HTML(
+                """<p style="text-align:center; font-size:16px;"><b>Looking to breeze through your study materials effortlessly? Simply upload your documents and fire away any questions you have!</p>"""
+            )
+            with gr.Row():
+                with gr.Accordion("Click to use preloaded examples", open=False):
+            
+                    example_2 = gr.Button(
+                        "Load History of Nigeria", variant="primary"
+                    )
+                    example_1 = gr.Button(
+                        "Load Science of Photosynthesis", variant="primary"
+                    )
+
+            with gr.Row():
+                with gr.Column():
+                    input_document = gr.Text(label="Copy your document here", lines=2)
+                    input_document_pdf = gr.inputs.File(label="Uplaod file")
+
+
+                with gr.Column():
+                    chatbot = gr.Chatbot(label="Chat History")
+                    input_question = gr.Text(
+                        label="Ask a question",
+                        placeholder="Type a question here and hit enter.",
+                    )
+                    clear = gr.Button("Clear", variant="primary")
+
+
+        
+        with gr.TabItem("Summarize"):
+            gr.HTML(
+                """<p style="text-align:center; font-size:24px;"><b> Get the most out of your study materials!</p>"""
+            )
+            gr.HTML(
+                """<p style="text-align:center; font-size:16px;"><b>You can easily upload your documents and generate quick summaries and practice questions in a flash.</p>"""
+            )
+
+            with gr.Row():
+                with gr.Accordion("Click to use preloaded examples", open=False):
+                    example_4 = gr.Button(
+                        "Load History of Nigeria", variant="primary"
+                    )
+                    example_3 = gr.Button(
+                        "Load Science of Photosynthesis", variant="primary"
+                    )
+
+            with gr.Row():
+                with gr.Column():
+                    summary_input = gr.Text(label="Document", lines=5)
+                with gr.Column():
+                    summary_output = gr.Text(label="Generated Summary", lines=5)
+                    invisible_comp = gr.Text(label="Dummy Component", visible=False)
+
+            with gr.Row():
+                with gr.Column():
+                    with gr.Accordion("Summary Settings", open=False):
+                        summary_length = gr.Radio(
+                            ["short", "medium", "long"],
+                            label="Summary Length",
+                            value="long",
+                        )
+                    
+                        summary_format = gr.Radio(
+                            ["paragraph", "bullets"],
+                            label="Summary Format",
+                            value="bullets",
+                        )
+                        extractiveness = gr.Radio(
+                            ["low", "medium", "high"],
+                            label="Extractiveness",
+                            info="Controls how close to the original text the summary is.",
+                            visible=False,
+                            value="high",
+                        )
+                        temperature = gr.Slider(
+                            minimum=0,
+                            maximum=5.0,
+                            value=0.64,
+                            step=0.1,
+                            interactive=True,
+                            visible=False,
+                            label="Temperature",
+                            info="Controls the randomness of the output. Lower values tend to generate more “predictable” output, while higher values tend to generate more “creative” output.",
+                        )
+
+            
+            with gr.Row():
+                generate_summary = gr.Button("Generate Summary", variant="primary")
+            
+            with gr.Row():
+                generate_questions_btn = gr.Button("Generate practice questions", variant="primary")
+            with gr.Row():
+                generate_output = gr.Text(label="Generated questions", lines=5)
+
 
     # fetch answer for submitted question corresponding to input document
     input_question.submit(
@@ -256,21 +226,21 @@ with gr.Blocks(theme=custom_theme) as demo:
         [input_question, chatbot],
         [input_question, chatbot],
         queue=False,
-    ).then(legal_doc_qa_bot, [input_document, chatbot], chatbot)
+    ).then(study_doc_qa_bot, [input_document, chatbot], chatbot)
 
     # reset the chatbot Q&A history when input document changes
     input_document.change(fn=reset_chatbot, inputs=[], outputs=chatbot)
 
     # Loading examples on click for Q&A module
     example_1.click(
-        load_gpl_license,
+        load_history,
         [],
         [input_document, input_question],
         queue=False,
     )
 
     example_2.click(
-        load_pokemon_license,
+        load_science,
         [],
         [input_document, input_question],
         queue=False,
@@ -278,14 +248,14 @@ with gr.Blocks(theme=custom_theme) as demo:
 
     # Loading examples on click for Q&A module
     example_3.click(
-        load_gpl_license,
+        load_history,
         [],
         [summary_input, invisible_comp],
         queue=False,
     )
 
     example_4.click(
-        load_pokemon_license,
+        load_science,
         [],
         [summary_input, invisible_comp],
         queue=False,
@@ -299,54 +269,22 @@ with gr.Blocks(theme=custom_theme) as demo:
         queue=False,
     )
 
-    # generate paraphrase corresponding to document submitted by the user.
-    generate_paraphrase.click(
-        paraphrase,
-        [paraphrase_input],
-        [paraphrase_output],
+    generate_questions_btn.click(
+        generate_questions,
+        [summary_input],
+        [generate_output],
         queue=False,
     )
 
     # clear the chatbot Q&A history when this button is clicked by the user
     clear.click(lambda: None, None, chatbot, queue=False)
 
-    # run search as user is typing the query
-    user_query.change(
-        cross_lingual_document_search,
-        [user_query, num_search_results, lang_choices, text_match],
-        [query_match_out_1, query_match_out_2, query_match_out_3],
-        queue=False,
-    )
-
     # run search if user submits query
     user_query.submit(
         cross_lingual_document_search,
         [user_query, num_search_results, lang_choices, text_match],
-        [query_match_out_1, query_match_out_2, query_match_out_3],
-        queue=False,
-    )
-
-    # translate results corresponding to 1st search result obtained if user clicks 'Translate'
-    translate_1.click(
-        translate_search_result,
-        [query_match_out_1, user_query],
-        [translate_res_1],
-        queue=False,
-    )
-
-    # translate results corresponding to 2nd search result obtained if user clicks 'Translate'
-    translate_2.click(
-        translate_search_result,
-        [query_match_out_2, user_query],
-        [translate_res_2],
-        queue=False,
-    )
-
-    # translate results corresponding to 3rd search result obtained if user clicks 'Translate'
-    translate_3.click(
-        translate_search_result,
-        [query_match_out_3, user_query],
-        [translate_res_3],
+        [query_match_out_1, query_match_out_2, query_match_out_3, \
+            translate_res_1,translate_res_2,translate_res_3],
         queue=False,
     )
 
