@@ -27,6 +27,12 @@ QDRANT_API_KEY = os.getenv("QDRANT_API_KEY")
 COHERE_API_KEY = os.getenv("COHERE_API_KEY")
 
 
+def replace_text(text):
+    if text.startswith("The answer is "):
+        text = text.replace("The answer is ", "", 1)
+    return text
+
+
 def summarize(
     document: str,
     summary_length: str,
@@ -111,13 +117,14 @@ def question_answer(input_document: str, history: List) -> str:
     relevant_context = context_index.similarity_search(question)
     answer = chain.run(input_documents=relevant_context, question=question)
     answer = answer.replace("\n", "").replace("Answer:", "")
+    answer = replace_text(answer) 
     return answer
 
 def generate_questions(input_document: str) -> str:
     generated_response = cohere.Client(COHERE_API_KEY).generate(
-        prompt = f"Give me 5 different quiz questions to test the understanding of the following text. Here's the provided text: {input_document}. Whats Questions 1 to 5 of the quiz ?:",
-        max_tokens = 300,
-        temperature = 0.8
+        prompt = f"Give me 5 different questions to test understanding of the following text provided. Here's the provided text: {input_document}. Now what is Questions 1 to 5  ?:",
+        max_tokens = 200,
+        temperature = 0.55
     )
     # prompt = f"Generate 5 different quiz questions to test the understanding of the following text. Here's the provided text: {input_document}. Whats Questions 1 to 5 of the quiz ?:"
     # print(prompt)

@@ -116,7 +116,7 @@ def cross_lingual_document_search(
         text_match,
     )
     final_results = [result[i].payload["text"] for i in range(len(result))]
-
+    
     # check if number of search results obtained (i.e. `final_results`) is matching with number of expected search results i.e. `num_results`
     if num_results > len(final_results):
         remaining_inputs = num_results - len(final_results)
@@ -124,6 +124,29 @@ def cross_lingual_document_search(
             final_results.append("")
 
     return final_results
+
+def document_source(
+    user_input: str, num_results: int, languages, text_match
+) -> List:
+    query_embedding, _ = embed_user_query(user_input)
+
+    # retrieve search results
+    result = search_wiki_for_query(
+        query_embedding,
+        num_results,
+        user_input,
+        languages,
+        text_match,
+    )
+    sources = [result[i].payload["url"] for i in range(len(result))]
+    
+    # check if number of search results obtained (i.e. `final_results`) is matching with number of expected search results i.e. `num_results`
+    if num_results > len(sources):
+        remaining_inputs = num_results - len(sources)
+        for input in range(remaining_inputs):
+            sources.append("")
+
+    return sources
 
 
 def translate_search_result():
