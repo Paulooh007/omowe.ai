@@ -3,15 +3,13 @@ import sys
 
 import pandas as pd
 from typing import List
-from dotenv import load_dotenv
-import difflib, requests
-
 import pinecone
+
 import cohere
 from langchain.embeddings.cohere import CohereEmbeddings
 from langchain.llms import Cohere
 from langchain.prompts import PromptTemplate
-from langchain.vectorstores import Pinecone
+from langchain.vectorstores import Pinecone, Qdrant
 from langchain.chains.question_answering import load_qa_chain
 
 sys.path.append(os.path.abspath('..'))
@@ -19,14 +17,10 @@ sys.path.append(os.path.abspath('..'))
 from src.constants import SUMMARIZATION_MODEL, EXAMPLES_FILE_PATH
 
 
-# load environment variables
-CWD = os.path.dirname(os.path.abspath(__file__))
-dotenv_path = os.path.join(os.path.dirname(CWD), ".env")
-load_dotenv(dotenv_path)
-# load environment variables
-PINECONE_API_KEY = os.getenv("PINECONE_API_KEY")
-PINECONE_ENV = os.getenv("PINECONE_ENV")
-COHERE_API_KEY = os.getenv("COHERE_API_KEY")
+PINECONE_API_KEY = os.environ.get("PINECONE_API_KEY")
+PINECONE_ENV = os.environ.get("PINECONE_ENV")
+COHERE_API_KEY = os.environ.get("COHERE_API_KEY")
+
 
 
 def replace_text(text):
@@ -95,6 +89,8 @@ def question_answer(input_document: str, history: List) -> str:
 
     texts =  [" ".join(word_list[k : k + 200]) for k in range(0, len(word_list), 200)]
 
+    # print(texts)
+
     embeddings = CohereEmbeddings(
         model="multilingual-22-12", cohere_api_key=COHERE_API_KEY
     )
@@ -147,57 +143,6 @@ def load_history():
     sample_question = examples_df["question"].iloc[1]
     return history_doc, sample_question
 
-
-def show_diff_html(seqm):
-    """Unify operations between two compared strings
-    seqm is a difflib.SequenceMatcher instance whose a & b are strings
-    """
-    output = []
-    for opcode, a0, a1, b0, b1 in seqm.get_opcodes():
-        if opcode == 'equal':
-            output.append(seqm.b[b0:b1])
-        elif opcode == 'insert':
-            output.append(f"<span style='background-color:lime;'>{seqm.b[b0:b1]}</span>")
-        # elif opcode == 'delete':
-        #     output.append(f"<span style='background-color:red;'>{seqm.a[a0:a1]}</span>")
-        elif opcode == 'replace':
-            output.append(f"<span style='background-color:red;'>{seqm.a[a0:a1]}</span>")
-            output.append(f"<span style='background-color:lime;'>{seqm.b[b0:b1]}</span>")
-        else:
-            if opcode == 'delete':
-                continue
-            raise RuntimeError("unexpected opcode")
-    return ''.join(output)
-
-# define a function to paraphrase text using Cohere API
-def paraphrase(text):
-    # create a cohere client with your API key
-    client = cohere.Client(api_key=COHERE_API_KEY)
-
-    # set the prompt for paraphrasing
-    prompt = f"Rephrase this sentence in a different way: {text}"
-
-    # generate a response using the multilingual-22-12 model
-    response = client.generate(
-        model="command-nightly",
-        prompt=prompt,
-
-    )
-    # get the generated text
-    rephrased_text = response[0].text
-    print(rephrased_text)
-
-    # compare the original and rephrased texts using difflib
-    sm = difflib.SequenceMatcher(None, text, rephrased_text)
-    html = show_diff_html(sm)
-
-    return html
-
-def load_gpl_license():
-    pass
-
-def load_pokemon_license():
-    pass
 
 if __name__ == "__main__":
     with open('sample_text.txt', 'r') as file:
