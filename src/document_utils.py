@@ -4,6 +4,7 @@ import sys
 import pandas as pd
 from typing import List
 import pinecone
+import difflib
 
 import cohere
 from langchain.embeddings.cohere import CohereEmbeddings
@@ -16,6 +17,9 @@ sys.path.append(os.path.abspath('..'))
 
 from src.constants import SUMMARIZATION_MODEL, EXAMPLES_FILE_PATH
 
+os.environ["PINECONE_ENV"] = "us-west1-gcp-free" 
+os.environ["PINECONE_API_KEY"] = "22e8b95b-18a6-42b4-8824-dc65f08a60e1" 
+os.environ["COHERE_API_KEY"]="DS7FcYkyVyVgxyKxJeoRwLa6EWU76QR5g4YSn6Fv" 
 
 PINECONE_API_KEY = os.environ.get("PINECONE_API_KEY")
 PINECONE_ENV = os.environ.get("PINECONE_ENV")
@@ -143,6 +147,50 @@ def load_history():
     sample_question = examples_df["question"].iloc[1]
     return history_doc, sample_question
 
+def show_diff_html(seqm):
+    """Unify operations between two compared strings
+    seqm is a difflib.SequenceMatcher instance whose a & b are strings
+    """
+    output = []
+    for opcode, a0, a1, b0, b1 in seqm.get_opcodes():
+        if opcode == 'equal':
+            output.append(seqm.b[b0:b1])
+        elif opcode == 'insert':
+            output.append(f"<span style='background-color:lime;'>{seqm.b[b0:b1]}</span>")
+        # elif opcode == 'delete':
+        #     output.append(f"<span style='background-color:red;'>{seqm.a[a0:a1]}</span>")
+        elif opcode == 'replace':
+            # output.append(f"<span style='background-color:red;'>{seqm.a[a0:a1]}</span>")
+            output.append(f"<span style='background-color:lime;'>{seqm.b[b0:b1]}</span>")
+        else:
+            if opcode == 'delete':
+                continue
+            raise RuntimeError("unexpected opcode")
+    return ''.join(output)
+
+# define a function to paraphrase text using Cohere API
+def paraphrase(text):
+    # create a cohere client with your API key
+    client = cohere.Client(api_key=COHERE_API_KEY)
+
+    # set the prompt for paraphrasing
+    prompt = f"Rephrase this sentence in a different way: {text}"
+
+    # generate a response using the multilingual-22-12 model
+    response = client.generate(
+        model="command-nightly",
+        prompt=prompt,
+
+    )
+    # get the generated text
+    rephrased_text = response[0].text
+    print(rephrased_text)
+
+    # compare the original and rephrased texts using difflib
+    sm = difflib.SequenceMatcher(None, text, rephrased_text)
+    html = show_diff_html(sm)
+
+    return html
 
 if __name__ == "__main__":
     with open('sample_text.txt', 'r') as file:
