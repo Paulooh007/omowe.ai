@@ -6,6 +6,7 @@ from src.document_utils import (
     question_answer,
     load_gpl_license,
     load_pokemon_license,
+    paraphrase,
 )
 from src.wiki_search import cross_lingual_document_search, translate_search_result
 from src.theme import CustomTheme
@@ -115,6 +116,49 @@ with gr.Blocks(theme=custom_theme) as demo:
                     )
                     example_4 = gr.Button(
                         "Load Pokemon Go Terms of Service", variant="primary"
+                    )
+        with gr.TabItem("Paraphrase"):
+            gr.HTML(
+                """<p style="text-align:center;"><b>Paraphraser. Add your document below and generate a rephrase for it.</p>"""
+            )
+
+            with gr.Row():
+                with gr.Column():
+                    paraphrase_input = gr.Text(label="Document", lines=10)
+                    generate_paraphrase = gr.Button("Paraphrase", variant="primary")
+
+                with gr.Column():
+                    paraphrase_output = gr.HTML(label="Paraphrase", lines=10)
+                    invisible_comp = gr.Text(label="Dummy Component", visible=False)
+
+            with gr.Row():
+                with gr.Accordion("Advanced Settings:", open=False):
+                    paraphrase_length = gr.Radio(
+                        ["short", "medium", "long"],
+                        label="Paraphrase Length",
+                        value="long",
+                    )
+                    paraphrase_format = gr.Radio(
+                        ["paragraph", "bullets"],
+                        label="Paraphrase Format",
+                        value="bullets",
+                    )
+                    extractiveness = gr.Radio(
+                        ["low", "medium", "high"],
+                        label="Extractiveness",
+                        info="Controls how close to the original text the paraphrase is.",
+                        visible=False,
+                        value="high",
+                    )
+                    temperature = gr.Slider(
+                        minimum=0,
+                        maximum=5.0,
+                        value=0.64,
+                        step=0.1,
+                        interactive=True,
+                        visible=False,
+                        label="Temperature",
+                        info="Controls the randomness of the output. Lower values tend to generate more “predictable” output, while higher values tend to generate more “creative” output.",
                     )
 
         with gr.TabItem("Document Search"):
@@ -252,6 +296,14 @@ with gr.Blocks(theme=custom_theme) as demo:
         summarize,
         [summary_input, summary_length, summary_format, extractiveness, temperature],
         [summary_output],
+        queue=False,
+    )
+
+    # generate paraphrase corresponding to document submitted by the user.
+    generate_paraphrase.click(
+        paraphrase,
+        [paraphrase_input],
+        [paraphrase_output],
         queue=False,
     )
 
