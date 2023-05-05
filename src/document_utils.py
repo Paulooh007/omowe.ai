@@ -4,12 +4,12 @@ import sys
 import pandas as pd
 from typing import List
 from dotenv import load_dotenv
-
+import pinecone
 import cohere
 from langchain.embeddings.cohere import CohereEmbeddings
 from langchain.llms import Cohere
 from langchain.prompts import PromptTemplate
-from langchain.vectorstores import Qdrant
+from langchain.vectorstores import Pinecone
 from langchain.chains.question_answering import load_qa_chain
 
 sys.path.append(os.path.abspath('..'))
@@ -22,8 +22,8 @@ CWD = os.path.dirname(os.path.abspath(__file__))
 dotenv_path = os.path.join(os.path.dirname(CWD), ".env")
 load_dotenv(dotenv_path)
 # load environment variables
-QDRANT_HOST = os.getenv("QDRANT_HOST")
-QDRANT_API_KEY = os.getenv("QDRANT_API_KEY")
+PINECONE_API_KEY = os.getenv("PINECONE_API_KEY")
+PINECONE_ENV = os.getenv("PINECONE_ENV")
 COHERE_API_KEY = os.getenv("COHERE_API_KEY")
 
 
@@ -82,21 +82,22 @@ def question_answer(input_document: str, history: List) -> str:
             answer (`str`):
                 The generated answer corresponding to the input question and document received from the user.
     """
+    pinecone.init(
+    api_key=PINECONE_API_KEY,  # find at app.pinecone.io
+    environment=PINECONE_ENV  # next to api key in console
+    )
     context = input_document
     # The last element of the `history` list contains the most recent question asked by the user whose answer needs to be generated.
     question = history[-1][0]
     word_list = context.split()
-    # texts = [context[k : k + 256] for k in range(0, len(context.split()), 256)]
-    texts =  [" ".join(word_list[k : k + 256]) for k in range(0, len(word_list), 256)]
 
-    # print(texts)
+    texts =  [" ".join(word_list[k : k + 200]) for k in range(0, len(word_list), 200)]
 
     embeddings = CohereEmbeddings(
         model="multilingual-22-12", cohere_api_key=COHERE_API_KEY
     )
-    context_index = Qdrant.from_texts(
-        texts, embeddings, url=QDRANT_HOST, api_key=QDRANT_API_KEY
-    )
+
+    context_index = Pinecone.from_texts(texts, embeddings, index_name="wiki-embed")
 
     prompt_template = """Text: {context}
     Question: {question}
