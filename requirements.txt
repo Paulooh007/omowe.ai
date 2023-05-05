@@ -1,5 +1,5 @@
 cohere
-qdrant_client
 gradio
 langchain
 black
+pinecone-client[grpc]
