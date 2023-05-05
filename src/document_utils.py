@@ -120,14 +120,43 @@ def question_answer(input_document: str, history: List) -> str:
     return answer
 
 def generate_questions(input_document: str) -> str:
-    generated_response = cohere.Client(COHERE_API_KEY).generate(
-        prompt = f"Give me 5 different questions to test understanding of the following text provided. Here's the provided text: {input_document}. Now what is Questions 1 to 5  ?:",
-        max_tokens = 200,
-        temperature = 0.55
-    )
+    co = cohere.Client(COHERE_API_KEY)
+    prompt = f"""Write five different questions to test the understanding of the following text. The questions should be short answer, with one or two words each, and vary in difficulty from easy to hard. Provide the correct answer for each question after the question. 
+Now write your own questions for this text:
+
+Text: {input_document}
+
+Question 1: (question_1)
+Answer: (answer_1)
+
+Question 2: (question_2)
+Answer: (answer_2)
+
+Question 3: (question_3)
+Answer: (answer_3)
+
+Question 4: (question_4)
+Answer: (answer_4)
+
+Question 5: (question_5)
+Answer: (answer_5)"""
+   # call the generate endpoint with your prompt and other parameters
+    response = co.generate(model='command', prompt=prompt, temperature=2, max_tokens=1000, )
+
+    # print the generated text from the response object
+    # print('Generated text:\n{}'.format(response.generations[0].text))
+    answer = response.generations[0].text.strip()
+    print(answer)
+    questions = answer.split('\n\n')
+    print(questions)
+    result = {}
+    for question in questions:
+        q, a = question.split('\n')
+        result[q] = a.split(': ')[1]
+    # print(result)
     # prompt = f"Generate 5 different quiz questions to test the understanding of the following text. Here's the provided text: {input_document}. Whats Questions 1 to 5 of the quiz ?:"
     # print(prompt)
-    return generated_response.generations[0].text
+    return answer #result.keys(), result.values()
 
 
 def load_science():
@@ -143,6 +172,50 @@ def load_history():
     sample_question = examples_df["question"].iloc[1]
     return history_doc, sample_question
 
+def show_diff_html(seqm):
+    """Unify operations between two compared strings
+    seqm is a difflib.SequenceMatcher instance whose a & b are strings
+    """
+    output = []
+    for opcode, a0, a1, b0, b1 in seqm.get_opcodes():
+        if opcode == 'equal':
+            output.append(seqm.b[b0:b1])
+        elif opcode == 'insert':
+            output.append(f"<span style='background-color:lime;'>{seqm.b[b0:b1]}</span>")
+        # elif opcode == 'delete':
+        #     output.append(f"<span style='background-color:red;'>{seqm.a[a0:a1]}</span>")
+        elif opcode == 'replace':
+            output.append(f"<span style='background-color:red;'>{seqm.a[a0:a1]}</span>")
+            output.append(f"<span style='background-color:lime;'>{seqm.b[b0:b1]}</span>")
+        else:
+            if opcode == 'delete':
+                continue
+            raise RuntimeError("unexpected opcode")
+    return ''.join(output)
+
+# define a function to paraphrase text using Cohere API
+def paraphrase(text):
+    # create a cohere client with your API key
+    client = cohere.Client(api_key=COHERE_API_KEY)
+
+    # set the prompt for paraphrasing
+    prompt = f"Rephrase this sentence in a different way: {text}"
+
+    # generate a response using the multilingual-22-12 model
+    response = client.generate(
+        model="command-nightly",
+        prompt=prompt,
+
+    )
+    # get the generated text
+    rephrased_text = response[0].text
+    print(rephrased_text)
+
+    # compare the original and rephrased texts using difflib
+    sm = difflib.SequenceMatcher(None, text, rephrased_text)
+    html = show_diff_html(sm)
+
+    return html
 
 if __name__ == "__main__":
     with open('sample_text.txt', 'r') as file:
