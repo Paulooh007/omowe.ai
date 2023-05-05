@@ -1,17 +1,13 @@
 import os
 import cohere
 from typing import List
-from dotenv import load_dotenv
 import pinecone
 
-CWD = os.path.dirname(os.path.abspath(__file__))
-dotenv_path = os.path.join(os.path.dirname(CWD), ".env")
-load_dotenv(dotenv_path)
 # load environment variables
+PINECONE_API_KEY = os.environ.get("PINECONE_API_KEY")
+PINECONE_ENV = os.environ.get("PINECONE_ENV")
+COHERE_API_KEY = os.environ.get("COHERE_API_KEY")
 
-PINECONE_API_KEY = os.getenv("PINECONE_API_KEY")
-PINECONE_ENV = os.getenv("PINECONE_ENV")
-COHERE_API_KEY = os.getenv("COHERE_API_KEY")
 
 MODEL_NAME = "multilingual-22-12"
 COLLECTION = "wiki-embed"
@@ -88,12 +84,9 @@ def cross_lingual_document_search(
 
     results = [result['title']+"\n"+result['text'] for result in metadata]
 
-    if num_results > len(results):
-        remaining_inputs = num_results - len(results)
-        for input in range(remaining_inputs):
-            results.append("")
+    url_list = [result['url'] + "\n\n" for result in metadata]
 
-    return results
+    return results + url_list
 
 def document_source(
     user_input: str, num_results: int, languages, text_match
