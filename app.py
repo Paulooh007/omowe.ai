@@ -210,7 +210,7 @@ with gr.Blocks(theme=custom_theme) as demo:
                             label="Temperature",
                             info="Controls the randomness of the output. Lower values tend to generate more “predictable” output, while higher values tend to generate more “creative” output.",
                         )
-            
+
             
             with gr.Row():
                 generate_summary = gr.Button("Generate Summary", variant="primary")
@@ -219,7 +219,7 @@ with gr.Blocks(theme=custom_theme) as demo:
                 generate_questions_btn = gr.Button("Generate practice questions", variant="primary")
             with gr.Row():
                 generate_output = gr.Text(label="Generated questions", lines=5)
-        
+
         with gr.TabItem("Paraphrase"):
             gr.HTML(
                 """<p style="text-align:center;"><b>Paraphraser. Add your document below and generate a rephrase for it.</p>"""
@@ -263,7 +263,7 @@ with gr.Blocks(theme=custom_theme) as demo:
                         label="Temperature",
                         info="Controls the randomness of the output. Lower values tend to generate more “predictable” output, while higher values tend to generate more “creative” output.",
                     )
-    
+
     # fetch answer for submitted question corresponding to input document
     input_question.submit(
         get_user_input,

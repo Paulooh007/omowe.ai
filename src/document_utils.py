@@ -4,7 +4,6 @@ import sys
 import pandas as pd
 from typing import List
 import pinecone
-import difflib
 
 import cohere
 from langchain.embeddings.cohere import CohereEmbeddings
@@ -17,9 +16,6 @@ sys.path.append(os.path.abspath('..'))
 
 from src.constants import SUMMARIZATION_MODEL, EXAMPLES_FILE_PATH
 
-os.environ["PINECONE_ENV"] = "us-west1-gcp-free" 
-os.environ["PINECONE_API_KEY"] = "22e8b95b-18a6-42b4-8824-dc65f08a60e1" 
-os.environ["COHERE_API_KEY"]="DS7FcYkyVyVgxyKxJeoRwLa6EWU76QR5g4YSn6Fv" 
 
 PINECONE_API_KEY = os.environ.get("PINECONE_API_KEY")
 PINECONE_ENV = os.environ.get("PINECONE_ENV")
@@ -124,14 +120,43 @@ def question_answer(input_document: str, history: List) -> str:
     return answer
 
 def generate_questions(input_document: str) -> str:
-    generated_response = cohere.Client(COHERE_API_KEY).generate(
-        prompt = f"Give me 5 different questions to test understanding of the following text provided. Here's the provided text: {input_document}. Now what is Questions 1 to 5  ?:",
-        max_tokens = 200,
-        temperature = 0.55
-    )
+    co = cohere.Client(COHERE_API_KEY)
+    prompt = f"""Write five different questions to test the understanding of the following text. The questions should be short answer, with one or two words each, and vary in difficulty from easy to hard. Provide the correct answer for each question after the question. 
+Now write your own questions for this text:
+
+Text: {input_document}
+
+Question 1: (question_1)
+Answer: (answer_1)
+
+Question 2: (question_2)
+Answer: (answer_2)
+
+Question 3: (question_3)
+Answer: (answer_3)
+
+Question 4: (question_4)
+Answer: (answer_4)
+
+Question 5: (question_5)
+Answer: (answer_5)"""
+   # call the generate endpoint with your prompt and other parameters
+    response = co.generate(model='command', prompt=prompt, temperature=2, max_tokens=1000, )
+
+    # print the generated text from the response object
+    # print('Generated text:\n{}'.format(response.generations[0].text))
+    answer = response.generations[0].text.strip()
+    print(answer)
+    questions = answer.split('\n\n')
+    print(questions)
+    result = {}
+    for question in questions:
+        q, a = question.split('\n')
+        result[q] = a.split(': ')[1]
+    # print(result)
     # prompt = f"Generate 5 different quiz questions to test the understanding of the following text. Here's the provided text: {input_document}. Whats Questions 1 to 5 of the quiz ?:"
     # print(prompt)
-    return generated_response.generations[0].text
+    return answer #result.keys(), result.values()
 
 
 def load_science():
@@ -160,7 +185,7 @@ def show_diff_html(seqm):
         # elif opcode == 'delete':
         #     output.append(f"<span style='background-color:red;'>{seqm.a[a0:a1]}</span>")
         elif opcode == 'replace':
-            # output.append(f"<span style='background-color:red;'>{seqm.a[a0:a1]}</span>")
+            output.append(f"<span style='background-color:red;'>{seqm.a[a0:a1]}</span>")
             output.append(f"<span style='background-color:lime;'>{seqm.b[b0:b1]}</span>")
         else:
             if opcode == 'delete':
