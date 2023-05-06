@@ -1,3 +1,17 @@
+---
+title: Omowe.ai
+emoji: 🏢
+colorFrom: blue
+colorTo: green
+sdk: gradio
+sdk_version: 3.28.2
+app_file: app.py
+pinned: false
+license: mit
+---
+
+Check out the configuration reference at https://huggingface.co/docs/hub/spaces-config-reference
+
 # Project Title : Omowe.AI
 
 Omowe.AI is a tool develooped for learners to aid their learning experience by increasing efficiency 
@@ -34,16 +48,3 @@ These instructions will help you get a copy of the project up and running on you
 `python app.py`
 
 
----
-title: Omowe.ai
-emoji: 🏢
-colorFrom: blue
-colorTo: green
-sdk: gradio
-sdk_version: 3.28.2
-app_file: app.py
-pinned: false
-license: mit
----
-
-Check out the configuration reference at https://huggingface.co/docs/hub/spaces-config-reference
