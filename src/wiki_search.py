@@ -83,7 +83,9 @@ def cross_lingual_document_search(
     )
 
     results = [result['title']+"\n"+result['text'] for result in metadata]
+    url_list = [result['url'] + "\n\n" for result in metadata]
 
+    return results + url_list
     url_list = [result['url'] + "\n\n" for result in metadata]
 
     return results + url_list
