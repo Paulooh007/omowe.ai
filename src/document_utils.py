@@ -4,6 +4,7 @@ import sys
 import pandas as pd
 from typing import List
 import pinecone
+import difflib
 
 import cohere
 from langchain.embeddings.cohere import CohereEmbeddings
@@ -15,6 +16,7 @@ from langchain.chains.question_answering import load_qa_chain
 sys.path.append(os.path.abspath('..'))
 
 from src.constants import SUMMARIZATION_MODEL, EXAMPLES_FILE_PATH
+
 
 
 PINECONE_API_KEY = os.environ.get("PINECONE_API_KEY")
@@ -185,10 +187,10 @@ def show_diff_html(seqm):
         # elif opcode == 'delete':
         #     output.append(f"<span style='background-color:red;'>{seqm.a[a0:a1]}</span>")
         elif opcode == 'replace':
-            output.append(f"<span style='background-color:red;'>{seqm.a[a0:a1]}</span>")
+            # output.append(f"<span style='background-color:red;'>{seqm.a[a0:a1]}</span>")
             output.append(f"<span style='background-color:lime;'>{seqm.b[b0:b1]}</span>")
         else:
-            if opcode == 'delete':
+            if opcode == 'delete' or opcode == 'replace':
                 continue
             raise RuntimeError("unexpected opcode")
     return ''.join(output)
@@ -205,6 +207,7 @@ def paraphrase(text):
     response = client.generate(
         model="command-nightly",
         prompt=prompt,
+        max_tokens=1000,
 
     )
     # get the generated text
