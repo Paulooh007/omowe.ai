@@ -69,7 +69,7 @@ These instructions will help you get a copy of the project up and running on you
 
 1. **[Cohere](https://docs.cohere.ai/docs/the-cohere-platform)**: Cohere offers capability to add cutting-edge language processing to any system. They train large language models with API access. <font face="Trebuchet MS">Legal-ease</font> uses Cohere's `multilingual-22-12` model to obtain multilingual embeddings, the `summarize-xlarge` model for summarization and `command-xlarge-nightly` for question answering.
 
-2.  **[Pinecone](https://www.pinecone.io/ Qdrant is a vector similarity engine & vector database and comes with an API service for semantic search - searching for the nearest high-dimensional vectors. 
+2.  **[Pinecone](https://www.pinecone.io/)** Pinecone is a vector similarity engine & vector database and comes with an API service for semantic search - searching for the nearest high-dimensional vectors. 
 
 3.  **[Langchain](https://langchain.readthedocs.io/en/latest/getting_started/getting_started.html)**: It is an open source library that provides abstractions for building LLM-based applications
 
