@@ -3,12 +3,17 @@ import cohere
 from typing import List
 import pinecone
 from easygoogletranslate import EasyGoogleTranslate
+from dotenv import load_dotenv
 
 
 # load environment variables
-PINECONE_API_KEY = os.environ.get("PINECONE_API_KEY")
-PINECONE_ENV = os.environ.get("PINECONE_ENV")
-COHERE_API_KEY = os.environ.get("COHERE_API_KEY")
+CWD = os.path.dirname(os.path.abspath(__file__))
+dotenv_path = os.path.join(os.path.dirname(CWD), ".env")
+load_dotenv(dotenv_path)
+# load environment variables
+PINECONE_API_KEY = os.getenv("PINECONE_API_KEY")
+PINECONE_ENV = os.getenv("PINECONE_ENV")
+COHERE_API_KEY = os.getenv("COHERE_API_KEY")
 
 
 MODEL_NAME = "multilingual-22-12"

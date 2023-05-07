@@ -2,5 +2,5 @@ cohere
 gradio
 langchain
 black
-"pinecone-client[grpc]"
+pinecone-client[grpc]
 easygoogletranslate

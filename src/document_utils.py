@@ -5,6 +5,7 @@ import pandas as pd
 from typing import List
 import pinecone
 import difflib
+from dotenv import load_dotenv 
 
 import cohere
 from langchain.embeddings.cohere import CohereEmbeddings
@@ -19,9 +20,14 @@ from src.constants import SUMMARIZATION_MODEL, EXAMPLES_FILE_PATH
 
 
 
-PINECONE_API_KEY = os.environ.get("PINECONE_API_KEY")
-PINECONE_ENV = os.environ.get("PINECONE_ENV")
-COHERE_API_KEY = os.environ.get("COHERE_API_KEY")
+# load environment variables
+CWD = os.path.dirname(os.path.abspath(__file__))
+dotenv_path = os.path.join(os.path.dirname(CWD), ".env")
+load_dotenv(dotenv_path)
+# load environment variables
+PINECONE_API_KEY = os.getenv("PINECONE_API_KEY")
+PINECONE_ENV = os.getenv("PINECONE_ENV")
+COHERE_API_KEY = os.getenv("COHERE_API_KEY")
 
 
 
@@ -142,11 +148,10 @@ def generate_questions(input_document: str) -> str:
 
     Question 5: (question_5)
     Answer: (answer_5)"""
-# call the generate endpoint with your prompt and other parameters
+
+
     response = co.generate(model='command', prompt=prompt, temperature=2, max_tokens=1000, )
 
-    # print the generated text from the response object
-    # print('Generated text:\n{}'.format(response.generations[0].text))
     answer = response.generations[0].text.strip()
     print(answer)
     questions = answer.split('\n\n')
@@ -155,10 +160,8 @@ def generate_questions(input_document: str) -> str:
     for question in questions:
         q, a = question.split('\n')
         result[q] = a.split(': ')[1]
-    # print(result)
-    # prompt = f"Generate 5 different quiz questions to test the understanding of the following text. Here's the provided text: {input_document}. Whats Questions 1 to 5 of the quiz ?:"
-    # print(prompt)
-    return answer #result.keys(), result.values()
+
+    return answer
 
 
 def load_science():
