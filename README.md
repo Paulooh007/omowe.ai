@@ -20,9 +20,9 @@ Check out the configuration reference at https://huggingface.co/docs/hub/spaces-
 
 # Project Title : Omowe.AI
 
-Omowe.AI is a tool develooped for learners to aid their learning experience by increasing efficiency 
+In today's fast-paced educational environment, students often struggle to navigate through vast amounts of study materials effectively. They spend countless hours searching for relevant information, trying to assimilate lengthy study materials, solving practice questions, and ensuring their essays are well-structured and plagiarism-free. This lack of efficient study tools not only hampers academic performance but also adds unnecessary stress to students' lives.
 
-## Try it out here:  **[omowe.ai](https://huggingface.co/spaces/paulokewunmi/omowe.ai)**:
+## Try it out here:  **[omowe.ai](https://huggingface.co/spaces/paulokewunmi/omowe.ai)**
 
 ## Omowe.ai addresses these issues using a suit of tools tools:
 
