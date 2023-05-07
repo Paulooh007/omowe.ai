@@ -54,10 +54,7 @@ These instructions will help you get a copy of the project up and running on you
 ```pip install -r requirements.txt
 ```
 
-4. Place the Environment Variables `COHERE_API_KEY`, `PINECONE_ENV`, `PINECONE_API_KEY` i `.env` file
-
-
-5. Run the app
+4. Run the app
 
 ```python app.py
 ```
