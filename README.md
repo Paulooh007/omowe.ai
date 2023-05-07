@@ -43,7 +43,8 @@ These instructions will help you get a copy of the project up and running on you
 
 1. Clone the repository:
 
-```git clone https://github.com/Paulooh007/omowe.ai.git
+```
+    git clone https://github.com/Paulooh007/omowe.ai.git
 ```
 
 2. Change directory to the project root:
