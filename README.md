@@ -49,17 +49,20 @@ These instructions will help you get a copy of the project up and running on you
 
 2. Change directory to the project root:
 
-```cd omowe.ai
+```
+    cd omowe.ai
 ```
 
 3. Install the required libraries:
 
-```pip install -r requirements.txt
+```
+    pip install -r requirements.txt
 ```
 
 4. Run the app
 
-```python app.py
+```
+    python app.py
 ```
 
 ## Tools & Technologies used:
