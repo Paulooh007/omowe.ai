@@ -13,7 +13,7 @@ license: mit
 Check out the configuration reference at https://huggingface.co/docs/hub/spaces-config-reference
 <p  align="center">
 
-<img  src="logo/omowe_logo.png"  alt="omowe.ai Logo"  height=620  width=212/>
+<img  src="logo/omowe_logo.png"  alt="omowe.ai Logo"  height=312  width=820/>
 
 </p>  
 
@@ -21,6 +21,8 @@ Check out the configuration reference at https://huggingface.co/docs/hub/spaces-
 # Project Title : Omowe.AI
 
 Omowe.AI is a tool develooped for learners to aid their learning experience by increasing efficiency 
+
+## Try it out here:  **[omowe.ai](https://huggingface.co/spaces/paulokewunmi/omowe.ai)**:
 
 ## Omowe.ai addresses these issues using a suit of tools tools:
 
