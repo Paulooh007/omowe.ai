@@ -93,4 +93,4 @@ These instructions will help you get a copy of the project up and running on you
 
 ## Acknowledgements:
 
-- We'd like to thank [shivalika singh and Pratik Mehta](https://github.com/shivalikasingh95/legal-ease) for their github, we found thier Gradio template/theme and some of thier functions very helpful
+- We'd like to thank Shivalika Singh and Pratik Mehta for their [github repo](https://github.com/shivalikasingh95/legal-ease), we found thier Gradio template/theme and some of thier functions very helpful
