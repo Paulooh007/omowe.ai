@@ -2,6 +2,8 @@ import os
 import cohere
 from typing import List
 import pinecone
+from easygoogletranslate import EasyGoogleTranslate
+
 
 # load environment variables
 PINECONE_API_KEY = os.environ.get("PINECONE_API_KEY")
@@ -14,6 +16,8 @@ COLLECTION = "wiki-embed"
 
 # create qdrant and cohere client
 cohere_client = cohere.Client(COHERE_API_KEY)
+
+translator = EasyGoogleTranslate()
 
 def init_pinecone():
     pinecone.init(api_key= PINECONE_API_KEY,
@@ -111,6 +115,10 @@ def document_source(
 
     return results
 
+def translate_text(doc):
+    doc = " ".join(doc.split()[:4800])
+    result = translator.translate(doc, target_language='en')
+    return result
 
 def translate_search_result():
     pass

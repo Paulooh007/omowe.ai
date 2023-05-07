@@ -7,10 +7,14 @@ from src.document_utils import (
     generate_questions,
     load_history,
     load_science,
+    generate_questions,
+    load_history,
+    load_science,
     paraphrase,
 )
-from src.wiki_search import cross_lingual_document_search, document_source
+from src.wiki_search import cross_lingual_document_search, translate_text
 from src.theme import CustomTheme
+
 
 max_search_results = 3
 
@@ -24,19 +28,25 @@ def get_user_input(input_question, history):
 
 
 def study_doc_qa_bot(input_document, history):
+def study_doc_qa_bot(input_document, history):
     bot_message = question_answer(input_document, history)
     history[-1][1] = bot_message
     return history
 
-def my_function(file_object):
-    pass
+# def translate_text(doc):
+#     translator = EasyGoogleTranslate()
 
+#     doc = " ".join(doc.split()[:4800])
+#     result = translator.translate(doc, target_language='en')
+#     return result
+    
 
 custom_theme = CustomTheme()
 
 
 with gr.Blocks(theme=custom_theme) as demo:
     gr.HTML(
+        """<html><center><img src='file/logo/omowe_logo.png', alt='omowe.ai logo', width=820, height=312 /></center><br></html>"""
         """<html><center><img src='file/logo/omowe_logo.png', alt='omowe.ai logo', width=820, height=312 /></center><br></html>"""
     )
 
@@ -73,7 +83,7 @@ with gr.Blocks(theme=custom_theme) as demo:
                 with gr.Column():
                     user_query = gr.Text(
                         label="Enter query here",
-                        placeholder="Search through study materials (e.g The history of Lagos)",
+                        placeholder="Search through all your documents",
                     )
 
                     num_search_results = gr.Slider(
@@ -94,15 +104,14 @@ with gr.Blocks(theme=custom_theme) as demo:
                                 )
 
                         with gr.Column():
-                            with gr.Accordion("Click to View Source", open=False):
-                                # gr.Button(
-                                #     label="Go to Source",
-                                #     value="Get Sources",
-                                #     variant="primary",
-                                # ).click(fn=None, _js="window.open('https://google.com', '_blank')")
-
+                            with gr.Accordion("Translate Search Result", open=False):
+                                translate_1 = gr.Button(
+                                    label="Translate",
+                                    value="Translate",
+                                    variant="primary",
+                                )
                                 translate_res_1 = gr.Textbox(
-                                    label=f"Source Url",
+                                    label=f"Translation Result 1"
                                 )
 
                     with gr.Row():
@@ -111,8 +120,18 @@ with gr.Blocks(theme=custom_theme) as demo:
 
                         with gr.Column():
                             with gr.Accordion("Click to View Source", open=False):
-                                translate_res_2 = gr.Textbox(
+                                source_res_2 = gr.Textbox(
                                     label=f"Source Url"
+                                )
+
+                                translate_btn_2 = gr.Button(
+                                    label="Translate Text",
+                                    value="Translate Text",
+                                    variant="primary",
+                                )
+                                translate_res_2 = gr.Textbox(
+                                    label=f"Translation in English",
+
                                 )
 
                     with gr.Row():
@@ -121,8 +140,16 @@ with gr.Blocks(theme=custom_theme) as demo:
 
                         with gr.Column():
                             with gr.Accordion("Click to View Source", open=False):
-                                translate_res_3 = gr.Textbox(
+                                source_res_3 = gr.Textbox(
                                     label=f"Source Url"
+                                )
+                                translate_btn_3 = gr.Button(
+                                    label="Translate Text",
+                                    value="Translate Text",
+                                    variant="primary",
+                                )
+                                translate_res_3= gr.Textbox(
+                                    label=f"Translation in English",
                                 )
 
         with gr.TabItem("Q&A"):
@@ -220,49 +247,6 @@ with gr.Blocks(theme=custom_theme) as demo:
             with gr.Row():
                 generate_output = gr.Text(label="Generated questions", lines=5)
 
-        with gr.TabItem("Paraphrase"):
-            gr.HTML(
-                """<p style="text-align:center;"><b>Paraphraser. Add your document below and generate a rephrase for it.</p>"""
-            )
-
-            with gr.Row():
-                with gr.Column():
-                    paraphrase_input = gr.Text(label="Document", lines=10)
-                    generate_paraphrase = gr.Button("Paraphrase", variant="primary")
-
-                with gr.Column():
-                    paraphrase_output = gr.HTML(label="Paraphrase", lines=10)
-                    invisible_comp = gr.Text(label="Dummy Component", visible=False)
-
-            with gr.Row():
-                with gr.Accordion("Advanced Settings:", open=False):
-                    paraphrase_length = gr.Radio(
-                        ["short", "medium", "long"],
-                        label="Paraphrase Length",
-                        value="long",
-                    )
-                    paraphrase_format = gr.Radio(
-                        ["paragraph", "bullets"],
-                        label="Paraphrase Format",
-                        value="bullets",
-                    )
-                    extractiveness = gr.Radio(
-                        ["low", "medium", "high"],
-                        label="Extractiveness",
-                        info="Controls how close to the original text the paraphrase is.",
-                        visible=False,
-                        value="high",
-                    )
-                    temperature = gr.Slider(
-                        minimum=0,
-                        maximum=5.0,
-                        value=0.64,
-                        step=0.1,
-                        interactive=True,
-                        visible=False,
-                        label="Temperature",
-                        info="Controls the randomness of the output. Lower values tend to generate more “predictable” output, while higher values tend to generate more “creative” output.",
-                    )
 
     # fetch answer for submitted question corresponding to input document
     input_question.submit(
@@ -331,12 +315,43 @@ with gr.Blocks(theme=custom_theme) as demo:
     # clear the chatbot Q&A history when this button is clicked by the user
     clear.click(lambda: None, None, chatbot, queue=False)
 
+    # run search as user is typing the query
+    user_query.change(
+        cross_lingual_document_search,
+        [user_query, num_search_results, lang_choices, text_match],
+        [query_match_out_1, query_match_out_2, query_match_out_3],
+        queue=False,
+    )
+
     # run search if user submits query
     user_query.submit(
         cross_lingual_document_search,
         [user_query, num_search_results, lang_choices, text_match],
         [query_match_out_1, query_match_out_2, query_match_out_3, \
             translate_res_1,translate_res_2,translate_res_3],
+        [query_match_out_1, query_match_out_2, query_match_out_3, \
+            source_res_1,source_res_2,source_res_3],
+        queue=False,
+    )
+
+
+    # translate results corresponding to 1st search result obtained if user clicks 'Translate'
+    translate_btn_1.click(
+        translate_text,
+        [query_match_out_1],
+        [translate_res_1],
+        queue=False,
+    )
+    translate_btn_2.click(
+        translate_text,
+        [query_match_out_2],
+        [translate_res_2],
+        queue=False,
+    )
+    translate_btn_3.click(
+        translate_text,
+        [query_match_out_3],
+        [translate_res_3],
         queue=False,
     )
 

@@ -124,25 +124,25 @@ def question_answer(input_document: str, history: List) -> str:
 def generate_questions(input_document: str) -> str:
     co = cohere.Client(COHERE_API_KEY)
     prompt = f"""Write five different questions to test the understanding of the following text. The questions should be short answer, with one or two words each, and vary in difficulty from easy to hard. Provide the correct answer for each question after the question. 
-Now write your own questions for this text:
+    Now write your own questions for this text:
 
-Text: {input_document}
+    Text: {input_document}
 
-Question 1: (question_1)
-Answer: (answer_1)
+    Question 1: (question_1)
+    Answer: (answer_1)
 
-Question 2: (question_2)
-Answer: (answer_2)
+    Question 2: (question_2)
+    Answer: (answer_2)
 
-Question 3: (question_3)
-Answer: (answer_3)
+    Question 3: (question_3)
+    Answer: (answer_3)
 
-Question 4: (question_4)
-Answer: (answer_4)
+    Question 4: (question_4)
+    Answer: (answer_4)
 
-Question 5: (question_5)
-Answer: (answer_5)"""
-   # call the generate endpoint with your prompt and other parameters
+    Question 5: (question_5)
+    Answer: (answer_5)"""
+# call the generate endpoint with your prompt and other parameters
     response = co.generate(model='command', prompt=prompt, temperature=2, max_tokens=1000, )
 
     # print the generated text from the response object
